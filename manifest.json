@@ -3,10 +3,10 @@
     "version": "0.1",
     "description": "Use gamepad to play, pause and seek in Netflix",
     "manifest_version": 2,
-	"permissions": ["tabs", "*://*.netflix.com/*"],
+	"permissions": ["tabs", "*://*.netflix.com/*", "*://*.youtube.com/*"],
 	"content_scripts": [
 		{
-		 	"matches": ["*://*.netflix.com/*"],
+		 	"matches": ["*://*.netflix.com/*", "*://*.youtube.com/*"],
 		 	"js": ["main.js"],
 		 	"run_at": "document_end"
 		}

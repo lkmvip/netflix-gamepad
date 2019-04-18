@@ -1,23 +1,31 @@
 var player, sessId;
 
-var waitForNetflix = setInterval(
-    function() {
-        videoPlayer = netflix.appContext.state.playerApp.getAPI().videoPlayer;
-        if (videoPlayer)
-            sessId = videoPlayer.getAllPlayerSessionIds()[0];
-        if (sessId)
-            player = videoPlayer.getVideoPlayerBySessionId(sessId);
-        if (player)
-            clearInterval(waitForNetflix);
-        console.log('Waiting for player...')
-    }, 500
-);
+// https://stackoverflow.com/questions/10455626/keydown-simulation-in-chrome-fires-normally-but-not-the-correct-key/12522769#12522769
+function triggerKeyboardEvent(el, keyCode)
+{
+    if (el == undefined)
+        return;
+
+    var eventObj = document.createEventObject ?
+        document.createEventObject() : document.createEvent("Events");
+  
+    if(eventObj.initEvent){
+      eventObj.initEvent("keydown", true, true);
+    }
+  
+    eventObj.keyCode = keyCode;
+    eventObj.which = keyCode;
+    
+    el.dispatchEvent ? el.dispatchEvent(eventObj) : el.fireEvent("onkeydown", eventObj); 
+  
+} 
 
 
 var currentTimeout;
 
 function mainLoop() {
     var timeout = 300;
+    var video = document.getElementsByTagName('video')[0];
 
     const g = navigator.getGamepads()[0];
     if (!g) {
@@ -25,19 +33,23 @@ function mainLoop() {
         return;
     }
 
-    if (Math.abs(g.axes[0]) > 0.8)
-        player.seek(player.getCurrentTime() + g.axes[0] * 10000);
-    else if (Math.abs(g.axes[1]) > 0.8) {
-        player.setVolume(player.getVolume() - 0.1 * g.axes[1]);
-        timeout = 150
-    }
-    else if (g.buttons[1].pressed && player.isPlaying())
-        player.pause();
-    else if (g.buttons[1].pressed && player.isPaused())
-        player.play();
+    if (g.axes[0] < -0.8)
+        triggerKeyboardEvent(video, 37)
+    else if (g.axes[0] > 0.8)
+        triggerKeyboardEvent(video, 39)
+    else if (g.axes[1] < -0.8)
+        triggerKeyboardEvent(video, 38)
+    else if (g.axes[1] > 0.8)
+        triggerKeyboardEvent(video, 40)
+    else if (g.buttons[0].pressed)
+        triggerKeyboardEvent(video, 77)
+    else if (g.buttons[1].pressed)
+        triggerKeyboardEvent(video, 32)
+    else if (g.buttons[9].pressed)
+        triggerKeyboardEvent(video, 70)
     else
         timeout = 50;
     currentTimeout = setTimeout(mainLoop, timeout);
 }
 
-setTimeout(mainLoop, 5000);
+setTimeout(mainLoop, 2500);
