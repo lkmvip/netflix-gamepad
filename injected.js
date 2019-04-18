@@ -37,7 +37,7 @@ function mainLoop() {
         player.play();
     else
         timeout = 50;
-    currentTimeout = timeout = setTimeout(mainLoop, timeout);
+    currentTimeout = setTimeout(mainLoop, timeout);
 }
 
 setTimeout(mainLoop, 5000);
